@@ -232,7 +232,7 @@ describe('setup-go', () => {
   });
 
   it('evaluates to stable with no input', async () => {
-    inputs['go-version'] = '1.13.0';
+    inputs['flow-version'] = 'v0.5.10';
 
     inSpy.mockImplementation(name => inputs[name]);
 
@@ -240,7 +240,7 @@ describe('setup-go', () => {
     findSpy.mockImplementation(() => toolPath);
     await main.run();
 
-    expect(logSpy).toHaveBeenCalledWith(`Setup go version spec 1.13.0`);
+    expect(logSpy).toHaveBeenCalledWith(`Setup flow version spec v0.5.10`);
   });
 
   it('does not export any variables for Go versions >=1.9', async () => {

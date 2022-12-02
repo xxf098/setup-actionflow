@@ -18,7 +18,7 @@ export async function run() {
     const versionSpec = resolveVersionInput();
 
     const cache = core.getBooleanInput('cache');
-    core.info(`Setup go version spec ${versionSpec}`);
+    core.info(`Setup flow version spec ${versionSpec}`);
 
     let arch = core.getInput('architecture');
 
