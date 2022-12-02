@@ -408,7 +408,7 @@ describe('setup-go', () => {
 
     await main.run();
 
-    let expPath = path.join(toolPath, 'bin');
+    let expPath = toolPath;
 
     expect(dlSpy).toHaveBeenCalled();
     expect(extractZipSpy).toHaveBeenCalled();
@@ -442,7 +442,7 @@ describe('setup-go', () => {
 
     await main.run();
 
-    let expPath = path.join(toolPath, 'bin');
+    let expPath = toolPath;
     expect(logSpy).toHaveBeenCalledWith('Setup go version spec 1.12.14');
     expect(findSpy).toHaveBeenCalled();
     expect(logSpy).toHaveBeenCalledWith('Attempting to download 1.12.14...');
@@ -711,7 +711,7 @@ describe('setup-go', () => {
 
       dlSpy.mockImplementation(async () => '/some/temp/path');
       let toolPath = path.normalize('/cache/go/1.13.7/x64');
-      extractTarSpy.mockImplementation(async () => '/some/other/temp/path');
+      extractZipSpy.mockImplementation(async () => '/some/other/temp/path');
       cacheSpy.mockImplementation(async () => toolPath);
 
       await main.run();
@@ -719,7 +719,7 @@ describe('setup-go', () => {
       let expPath = toolPath;
 
       expect(dlSpy).toHaveBeenCalled();
-      expect(extractTarSpy).toHaveBeenCalled();
+      expect(extractZipSpy).toHaveBeenCalled();
       expect(logSpy).toHaveBeenCalledWith(
         'Attempting to resolve the latest version from the manifest...'
       );
@@ -753,7 +753,7 @@ describe('setup-go', () => {
 
       dlSpy.mockImplementation(async () => '/some/temp/path');
       let toolPath = path.normalize('/cache/go/1.13.7/x64');
-      extractTarSpy.mockImplementation(async () => '/some/other/temp/path');
+      extractZipSpy.mockImplementation(async () => '/some/other/temp/path');
       cacheSpy.mockImplementation(async () => toolPath);
 
       await main.run();
@@ -764,7 +764,7 @@ describe('setup-go', () => {
         `Failed to resolve version ${versionSpec} from manifest`
       );
       expect(dlSpy).toHaveBeenCalled();
-      expect(extractTarSpy).toHaveBeenCalled();
+      expect(extractZipSpy).toHaveBeenCalled();
       expect(logSpy).toHaveBeenCalledWith(
         'Attempting to resolve the latest version from the manifest...'
       );
