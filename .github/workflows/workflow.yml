@@ -32,6 +32,8 @@ jobs:
         run: |
           npm run build
           env INPUT_FLOW-VERSION=v0.5.10 INPUT_CACHE=false INPUT_CHECK-LATEST=false node ./dist/setup/index.js
+          flow init && flow update
+          flow do mkdir
 
       # - name: Lint
       #   run: npm run format-check

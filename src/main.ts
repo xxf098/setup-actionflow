@@ -54,12 +54,7 @@ export async function run() {
     const matchersPath = path.join(__dirname, '../..', 'matchers.json');
     core.info(`##[add-matcher]${matchersPath}`);
 
-    // output the version actually being used
-    let goPath = await io.which('flow');
-    let goVersion = (cp.execSync(`${goPath} version`) || '').toString();
-    core.info(goVersion);
-
-    core.setOutput('flow-version', parseGoVersion(goVersion));
+    core.setOutput('flow-version', versionSpec);
    
   } catch (error) {
     core.setFailed(error.message);
