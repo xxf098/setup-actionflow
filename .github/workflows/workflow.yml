@@ -27,6 +27,9 @@ jobs:
 
       - name: npm ci
         run: npm ci
+
+      - name: npm test
+        run: npm test        
       
       - name: Setup flow
         run: |
@@ -37,12 +40,12 @@ jobs:
         run: |
           flow init && flow update
           flow do mkdir
+          test -d hello
 
       # - name: Lint
       #   run: npm run format-check
 
-      # - name: npm test
-      #   run: npm test
+
 
       # - name: audit packages
       #   run: npm audit --audit-level=high

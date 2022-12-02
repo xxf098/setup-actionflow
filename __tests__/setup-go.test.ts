@@ -231,17 +231,6 @@ describe('setup-go', () => {
     expect(fileName).toBe('go1.14rc1.linux-amd64.tar.gz');
   });
 
-  it('evaluates to stable with input as true', async () => {
-    inputs['go-version'] = '1.13.0';
-    inputs.stable = 'true';
-
-    let toolPath = path.normalize('/cache/go/1.13.0/x64');
-    findSpy.mockImplementation(() => toolPath);
-    await main.run();
-
-    expect(logSpy).toHaveBeenCalledWith(`Setup go version spec 1.13.0`);
-  });
-
   it('evaluates to stable with no input', async () => {
     inputs['go-version'] = '1.13.0';
 
