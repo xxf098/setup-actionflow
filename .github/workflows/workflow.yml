@@ -30,7 +30,7 @@ jobs:
       
       - name: Run
         run: |
-          npm build
+          npm run build
           env INPUT_FLOW-VERSION=v0.5.10 INPUT_CACHE=false node ./dist/setup/index.js
 
       # - name: Lint
