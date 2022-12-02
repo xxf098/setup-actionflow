@@ -38,19 +38,10 @@ export async function run() {
         arch
       );
 
-      core.addPath(path.join(installDir, 'bin'));
-      core.info('Added go to the path');
+      core.addPath(installDir);
+      core.info('Added flow to the path');
 
-      const version = installer.makeSemver(versionSpec);
-      // Go versions less than 1.9 require GOROOT to be set
-      if (semver.lt(version, '1.9.0')) {
-        core.info('Setting GOROOT for Go version < 1.9');
-        core.exportVariable('GOROOT', installDir);
-      }
-
-      let added = await addBinToPath();
-      core.debug(`add bin ${added}`);
-      core.info(`Successfully set up Go version ${versionSpec}`);
+      core.info(`Successfully set up flow version ${versionSpec}`);
     }
 
     if (cache && isCacheFeatureAvailable()) {
@@ -64,16 +55,12 @@ export async function run() {
     core.info(`##[add-matcher]${matchersPath}`);
 
     // output the version actually being used
-    let goPath = await io.which('go');
+    let goPath = await io.which('flow');
     let goVersion = (cp.execSync(`${goPath} version`) || '').toString();
     core.info(goVersion);
 
-    core.setOutput('go-version', parseGoVersion(goVersion));
-
-    core.startGroup('go env');
-    let goEnv = (cp.execSync(`${goPath} env`) || '').toString();
-    core.info(goEnv);
-    core.endGroup();
+    core.setOutput('flow-version', parseGoVersion(goVersion));
+   
   } catch (error) {
     core.setFailed(error.message);
   }
@@ -81,7 +68,7 @@ export async function run() {
 
 export async function addBinToPath(): Promise<boolean> {
   let added = false;
-  let g = await io.which('go');
+  let g = await io.which('flow');
   core.debug(`which go :${g}:`);
   if (!g) {
     core.debug('go not in the path');
@@ -115,31 +102,11 @@ export function parseGoVersion(versionString: string): string {
   // based on go/src/cmd/go/internal/version/version.go:
   // fmt.Printf("go version %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH)
   // expecting go<version> for runtime.Version()
-  return versionString.split(' ')[2].slice('go'.length);
+  return versionString.split(' ')[2].slice('flow'.length);
 }
 
 function resolveVersionInput(): string {
-  let version = core.getInput('go-version');
-  const versionFilePath = core.getInput('go-version-file');
-
-  if (version && versionFilePath) {
-    core.warning(
-      'Both go-version and go-version-file inputs are specified, only go-version will be used'
-    );
-  }
-
-  if (version) {
-    return version;
-  }
-
-  if (versionFilePath) {
-    if (!fs.existsSync(versionFilePath)) {
-      throw new Error(
-        `The specified go version file at: ${versionFilePath} does not exist`
-      );
-    }
-    version = installer.parseGoVersionFile(versionFilePath);
-  }
+  let version = core.getInput('flow-version');
 
   return version;
 }

@@ -55,7 +55,7 @@ export async function getGo(
 
   // check cache
   let toolPath: string;
-  toolPath = tc.find('go', versionSpec, arch);
+  toolPath = tc.find('flow', versionSpec, arch);
   // If not found in cache, download
   if (toolPath) {
     core.info(`Found in cache @ ${toolPath}`);
@@ -65,11 +65,14 @@ export async function getGo(
   let downloadPath = '';
   let info: IGoVersionInfo | null = null;
 
+  let archFilter = sys.getArch(arch);
+  let platFilter = sys.getPlatform();
+
   //
   // Try download from internal distribution (popular versions only)
   //
   try {
-    info = await getInfoFromManifest(versionSpec, true, auth, arch);
+    info = await getFlowInfoFromDist(versionSpec, archFilter, platFilter);
     if (info) {
       downloadPath = await installGoVersion(info, auth, arch);
     } else {
@@ -90,27 +93,8 @@ export async function getGo(
     }
     core.debug(err.stack);
     core.info('Falling back to download directly from Go');
+    throw new Error(`Failed to download version ${versionSpec}: ${err}`);
   }
-
-  //
-  // Download from storage.googleapis.com
-  //
-  if (!downloadPath) {
-    info = await getInfoFromDist(versionSpec, arch);
-    if (!info) {
-      throw new Error(
-        `Unable to find Go version '${versionSpec}' for platform ${osPlat} and architecture ${arch}.`
-      );
-    }
-
-    try {
-      core.info('Install from dist');
-      downloadPath = await installGoVersion(info, undefined, arch);
-    } catch (err) {
-      throw new Error(`Failed to download version ${versionSpec}: ${err}`);
-    }
-  }
-
   return downloadPath;
 }
 
@@ -143,21 +127,18 @@ async function installGoVersion(
 
   const downloadPath = await tc.downloadTool(info.downloadUrl, fileName, auth);
 
-  core.info('Extracting Go...');
+  core.info('Extracting Flow...');
   let extPath = await extractGoArchive(downloadPath);
   core.info(`Successfully extracted go to ${extPath}`);
-  if (info.type === 'dist') {
-    extPath = path.join(extPath, 'go');
-  }
 
   core.info('Adding to the cache ...');
   const cachedDir = await tc.cacheDir(
     extPath,
-    'go',
+    'flow',
     makeSemver(info.resolvedVersion),
     arch
   );
-  core.info(`Successfully cached go to ${cachedDir}`);
+  core.info(`Successfully cached flow to ${cachedDir}`);
   return cachedDir;
 }
 
@@ -168,7 +149,7 @@ export async function extractGoArchive(archivePath: string): Promise<string> {
   if (platform === 'win32') {
     extPath = await tc.extractZip(archivePath);
   } else {
-    extPath = await tc.extractTar(archivePath);
+    extPath = await tc.extractZip(archivePath);
   }
 
   return extPath;
@@ -200,6 +181,27 @@ export async function getInfoFromManifest(
 
   return info;
 }
+
+async function getFlowInfoFromDist(
+  version: string,
+  arch: string,
+  platform: string
+): Promise<IGoVersionInfo | null> {
+  if (!version) {
+    return null;
+  }
+
+  const fileName: string = `flow-${platform}-${arch}-${version}.zip`
+  let downloadUrl: string = `https://github.com/xxf098/actionflow/releases/download/${version}/${fileName}`;
+
+  return <IGoVersionInfo>{
+    type: 'dist',
+    downloadUrl: downloadUrl,
+    resolvedVersion: version,
+    fileName: fileName
+  };
+}
+
 
 async function getInfoFromDist(
   versionSpec: string,
