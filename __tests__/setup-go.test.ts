@@ -276,7 +276,7 @@ describe('setup-go', () => {
     findSpy.mockImplementation(() => toolPath);
     await main.run();
 
-    let expPath = path.join(toolPath, 'bin');
+    let expPath = toolPath;
     expect(cnSpy).toHaveBeenCalledWith(`::add-path::${expPath}${osm.EOL}`);
   });
 
@@ -295,16 +295,16 @@ describe('setup-go', () => {
     os.platform = 'linux';
     os.arch = 'x64';
 
-    inputs['go-version'] = '1.13.1';
+    inputs['flow-version'] = 'v0.5.10';
 
     findSpy.mockImplementation(() => '');
     dlSpy.mockImplementation(() => '/some/temp/path');
-    let toolPath = path.normalize('/cache/go/1.13.0/x64');
+    let toolPath = path.normalize('/cache/flow/v0.5.10/x64');
     extractTarSpy.mockImplementation(() => '/some/other/temp/path');
     cacheSpy.mockImplementation(() => toolPath);
     await main.run();
 
-    let expPath = path.join(toolPath, 'bin');
+    let expPath = toolPath;
 
     expect(dlSpy).toHaveBeenCalled();
     expect(extractTarSpy).toHaveBeenCalled();
@@ -315,22 +315,22 @@ describe('setup-go', () => {
     os.platform = 'win32';
     os.arch = 'x64';
 
-    inputs['go-version'] = '1.13.1';
+    inputs['flow-version'] = 'v0.5.10';
     process.env['RUNNER_TEMP'] = 'C:\\temp\\';
 
     findSpy.mockImplementation(() => '');
     dlSpy.mockImplementation(() => 'C:\\temp\\some\\path');
     extractZipSpy.mockImplementation(() => 'C:\\temp\\some\\other\\path');
 
-    let toolPath = path.normalize('C:\\cache\\go\\1.13.0\\x64');
+    let toolPath = path.normalize('C:\\cache\\flow\\v0.5.10\\x64');
     cacheSpy.mockImplementation(() => toolPath);
 
     await main.run();
 
-    let expPath = path.win32.join(toolPath, 'bin');
+    let expPath = toolPath;
     expect(dlSpy).toHaveBeenCalledWith(
-      'https://storage.googleapis.com/golang/go1.13.1.windows-amd64.zip',
-      'C:\\temp\\go1.13.1.windows-amd64.zip',
+      'https://github.com/xxf098/actionflow/releases/download/v0.5.10/flow-linux-amd64-v0.5.10.zip',
+      'C:\\temp\\flow-linux-amd64-v0.5.10.zip',
       undefined
     );
     expect(cnSpy).toHaveBeenCalledWith(`::add-path::${expPath}${osm.EOL}`);
@@ -340,7 +340,7 @@ describe('setup-go', () => {
     os.platform = 'linux';
     os.arch = 'x64';
 
-    inputs['go-version'] = '9.99.9';
+    inputs['flow-version'] = '9.99.9';
 
     findSpy.mockImplementation(() => '');
     await main.run();
@@ -356,7 +356,7 @@ describe('setup-go', () => {
 
     let versionSpec = '1.12.16';
 
-    inputs['go-version'] = versionSpec;
+    inputs['flow-version'] = versionSpec;
     inputs['token'] = 'faketoken';
 
     let expectedUrl =
@@ -372,7 +372,7 @@ describe('setup-go', () => {
 
     await main.run();
 
-    let expPath = path.join(toolPath, 'bin');
+    let expPath = toolPath;
 
     expect(dlSpy).toHaveBeenCalled();
     expect(extractTarSpy).toHaveBeenCalled();
@@ -393,7 +393,7 @@ describe('setup-go', () => {
 
     let versionSpec = '1.12';
 
-    inputs['go-version'] = versionSpec;
+    inputs['flow-version'] = versionSpec;
     inputs['token'] = 'faketoken';
 
     let expectedUrl =
@@ -430,7 +430,7 @@ describe('setup-go', () => {
 
     let versionSpec = '1.12.14';
 
-    inputs['go-version'] = versionSpec;
+    inputs['flow-version'] = versionSpec;
     inputs['token'] = 'faketoken';
 
     // ... but not in the local cache
@@ -463,7 +463,7 @@ describe('setup-go', () => {
     os.platform = 'linux';
     os.arch = 'x64';
 
-    inputs['go-version'] = '1.13.1';
+    inputs['flow-version'] = '1.13.1';
 
     findSpy.mockImplementation(() => '');
     dlSpy.mockImplementation(() => {
@@ -628,7 +628,7 @@ describe('setup-go', () => {
       os.platform = 'linux';
       os.arch = 'x64';
 
-      inputs['go-version'] = '1.16';
+      inputs['flow-version'] = '1.16';
       inputs['check-latest'] = false;
 
       const toolPath = path.normalize('/cache/go/1.16.1/x64');
@@ -645,7 +645,7 @@ describe('setup-go', () => {
       os.platform = 'linux';
       os.arch = 'x64';
 
-      inputs['go-version'] = '1.16';
+      inputs['flow-version'] = '1.16';
       inputs['check-latest'] = true;
 
       const toolPath = path.normalize('/cache/go/1.16.1/x64');
@@ -666,7 +666,7 @@ describe('setup-go', () => {
 
       const versionSpec = '1.17';
       const patchVersion = '1.17.6';
-      inputs['go-version'] = versionSpec;
+      inputs['flow-version'] = versionSpec;
       inputs['stable'] = 'true';
       inputs['check-latest'] = true;
 
@@ -702,7 +702,7 @@ describe('setup-go', () => {
 
       let versionSpec = '1.13';
 
-      inputs['go-version'] = versionSpec;
+      inputs['flow-version'] = versionSpec;
       inputs['check-latest'] = true;
       inputs['always-auth'] = false;
       inputs['token'] = 'faketoken';
@@ -717,7 +717,7 @@ describe('setup-go', () => {
 
       await main.run();
 
-      let expPath = path.join(toolPath, 'bin');
+      let expPath = toolPath;
 
       expect(dlSpy).toHaveBeenCalled();
       expect(extractTarSpy).toHaveBeenCalled();
@@ -741,7 +741,7 @@ describe('setup-go', () => {
 
       process.env['GITHUB_PATH'] = '';
 
-      inputs['go-version'] = versionSpec;
+      inputs['flow-version'] = versionSpec;
       inputs['check-latest'] = true;
       inputs['always-auth'] = false;
       inputs['token'] = 'faketoken';
@@ -759,7 +759,7 @@ describe('setup-go', () => {
 
       await main.run();
 
-      let expPath = path.join(toolPath, 'bin');
+      let expPath = toolPath;
 
       expect(logSpy).toHaveBeenCalledWith(
         `Failed to resolve version ${versionSpec} from manifest`
@@ -841,7 +841,7 @@ use .
     });
 
     it('is overwritten by go-version', async () => {
-      inputs['go-version'] = '1.13.1';
+      inputs['flow-version'] = '1.13.1';
       inputs['go-version-file'] = 'go.mod';
       existsSpy.mockImplementation(() => true);
       readFileSpy.mockImplementation(() => Buffer.from(goModContents));
@@ -876,7 +876,7 @@ use .
 
         const platform = os.platform === 'win32' ? 'win' : os.platform;
 
-        inputs['go-version'] = version;
+        inputs['flow-version'] = version;
         inputs['architecture'] = arch;
 
         let expectedUrl =
