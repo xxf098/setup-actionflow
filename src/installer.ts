@@ -203,26 +203,6 @@ async function getFlowInfoFromDist(
 }
 
 
-async function getInfoFromDist(
-  versionSpec: string,
-  arch: string
-): Promise<IGoVersionInfo | null> {
-  let version: IGoVersion | undefined;
-  version = await findMatch(versionSpec, arch);
-  if (!version) {
-    return null;
-  }
-
-  let downloadUrl: string = `https://storage.googleapis.com/golang/${version.files[0].filename}`;
-
-  return <IGoVersionInfo>{
-    type: 'dist',
-    downloadUrl: downloadUrl,
-    resolvedVersion: version.version,
-    fileName: version.files[0].filename
-  };
-}
-
 export async function findMatch(
   versionSpec: string,
   arch = os.arch()

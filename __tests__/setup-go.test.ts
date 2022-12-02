@@ -236,7 +236,7 @@ describe('setup-go', () => {
 
     inSpy.mockImplementation(name => inputs[name]);
 
-    let toolPath = path.normalize('/cache/go/1.13.0/x64');
+    let toolPath = path.normalize('/cache/flow/v0.5.10/x64');
     findSpy.mockImplementation(() => toolPath);
     await main.run();
 
@@ -244,10 +244,10 @@ describe('setup-go', () => {
   });
 
   it('does not export any variables for Go versions >=1.9', async () => {
-    inputs['go-version'] = '1.13.0';
+    inputs['flow-version'] = 'v0.5.10';
     inSpy.mockImplementation(name => inputs[name]);
 
-    let toolPath = path.normalize('/cache/go/1.13.0/x64');
+    let toolPath = path.normalize('/cache/flow/v0.5.10/x64');
     findSpy.mockImplementation(() => toolPath);
 
     let vars: {[key: string]: string} = {};
@@ -260,10 +260,10 @@ describe('setup-go', () => {
   });
 
 
-  it('finds a version of go already in the cache', async () => {
-    inputs['go-version'] = '1.13.0';
+  it('finds a version of flow already in the cache', async () => {
+    inputs['flow-version'] = 'v0.5.10';
 
-    let toolPath = path.normalize('/cache/go/1.13.0/x64');
+    let toolPath = path.normalize('/cache/flow/v0.5.10/x64');
     findSpy.mockImplementation(() => toolPath);
     await main.run();
 
