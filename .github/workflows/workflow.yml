@@ -27,13 +27,18 @@ jobs:
 
       - name: npm ci
         run: npm ci
+      
+      - name: Run
+        run: |
+          npm build
+          env INPUT_FLOW-VERSION=v0.5.10 INPUT_CACHE=false node ./dist/setup/index.js
 
       # - name: Lint
       #   run: npm run format-check
 
-      - name: npm test
-        run: npm test
+      # - name: npm test
+      #   run: npm test
 
-      - name: audit packages
-        run: npm audit --audit-level=high
-        if: matrix.operating-system == 'ubuntu-latest'
+      # - name: audit packages
+      #   run: npm audit --audit-level=high
+      #   if: matrix.operating-system == 'ubuntu-latest'

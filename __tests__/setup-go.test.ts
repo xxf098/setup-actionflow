@@ -123,7 +123,7 @@ describe('setup-go', () => {
   }, 100000);
 
   it('can extract the major.minor.patch version from a given Go version string', async () => {
-    const goVersionOutput = 'go version go1.16.6 darwin/amd64';
+    const goVersionOutput = 'flow version flow1.16.6 darwin/amd64';
     expect(main.parseGoVersion(goVersionOutput)).toBe('1.16.6');
   });
 
@@ -270,23 +270,6 @@ describe('setup-go', () => {
     expect(vars).toStrictEqual({});
   });
 
-  it('exports GOROOT for Go versions <1.9', async () => {
-    inputs['go-version'] = '1.8';
-    inSpy.mockImplementation(name => inputs[name]);
-
-    let toolPath = path.normalize('/cache/go/1.8.0/x64');
-    findSpy.mockImplementation(() => toolPath);
-
-    let vars: {[key: string]: string} = {};
-    exportVarSpy.mockImplementation((name: string, val: string) => {
-      vars[name] = val;
-    });
-
-    await main.run();
-    expect(vars).toStrictEqual({
-      GOROOT: toolPath
-    });
-  });
 
   it('finds a version of go already in the cache', async () => {
     inputs['go-version'] = '1.13.0';
