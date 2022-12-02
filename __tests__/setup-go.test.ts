@@ -419,7 +419,7 @@ describe('setup-go', () => {
       `Acquiring 1.12.17 from ${expectedUrl}`
     );
 
-    expect(logSpy).toHaveBeenCalledWith(`Added go to the path`);
+    expect(logSpy).toHaveBeenCalledWith(`Added flow to the path`);
     expect(cnSpy).toHaveBeenCalledWith(`::add-path::${expPath}${osm.EOL}`);
   });
 
@@ -687,11 +687,11 @@ describe('setup-go', () => {
       expect(logSpy).toHaveBeenCalledWith(
         `Attempting to download ${patchVersion}...`
       );
-      expect(logSpy).toHaveBeenCalledWith('Extracting Go...');
+      expect(logSpy).toHaveBeenCalledWith('Extracting Flow...');
       expect(logSpy).toHaveBeenCalledWith('Adding to the cache ...');
-      expect(logSpy).toHaveBeenCalledWith('Added go to the path');
+      expect(logSpy).toHaveBeenCalledWith('Added flow to the path');
       expect(logSpy).toHaveBeenCalledWith(
-        `Successfully set up Go version ${versionSpec}`
+        `Successfully set up Flow version ${versionSpec}`
       );
     });
 

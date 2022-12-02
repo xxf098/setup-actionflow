@@ -41,7 +41,7 @@ export async function run() {
       core.addPath(installDir);
       core.info('Added flow to the path');
 
-      core.info(`Successfully set up flow version ${versionSpec}`);
+      core.info(`Successfully set up Flow version ${versionSpec}`);
     }
 
     if (cache && isCacheFeatureAvailable()) {
