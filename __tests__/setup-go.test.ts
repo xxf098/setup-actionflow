@@ -300,14 +300,14 @@ describe('setup-go', () => {
     findSpy.mockImplementation(() => '');
     dlSpy.mockImplementation(() => '/some/temp/path');
     let toolPath = path.normalize('/cache/flow/v0.5.10/x64');
-    extractTarSpy.mockImplementation(() => '/some/other/temp/path');
+    extractZipSpy.mockImplementation(() => '/some/other/temp/path');
     cacheSpy.mockImplementation(() => toolPath);
     await main.run();
 
     let expPath = toolPath;
 
     expect(dlSpy).toHaveBeenCalled();
-    expect(extractTarSpy).toHaveBeenCalled();
+    expect(extractZipSpy).toHaveBeenCalled();
     expect(cnSpy).toHaveBeenCalledWith(`::add-path::${expPath}${osm.EOL}`);
   });
 
@@ -359,8 +359,7 @@ describe('setup-go', () => {
     inputs['flow-version'] = versionSpec;
     inputs['token'] = 'faketoken';
 
-    let expectedUrl =
-      'https://github.com/actions/go-versions/releases/download/1.12.16-20200616.20/go-1.12.16-linux-x64.tar.gz';
+    let expectedUrl = 'https://github.com/xxf098/actionflow/releases/download/1.12.16/flow-linux-amd64-1.12.16.zip';
 
     // ... but not in the local cache
     findSpy.mockImplementation(() => '');
@@ -397,7 +396,7 @@ describe('setup-go', () => {
     inputs['token'] = 'faketoken';
 
     let expectedUrl =
-      'https://github.com/actions/go-versions/releases/download/1.12.17-20200616.21/go-1.12.17-linux-x64.tar.gz';
+      'https://github.com/xxf098/actionflow/releases/download/1.12.16/flow-linux-amd64-1.12.16.zip';
 
     // ... but not in the local cache
     findSpy.mockImplementation(() => '');
@@ -438,7 +437,7 @@ describe('setup-go', () => {
 
     dlSpy.mockImplementation(async () => '/some/temp/path');
     let toolPath = path.normalize('/cache/go/1.12.14/x64');
-    extractTarSpy.mockImplementation(async () => '/some/other/temp/path');
+    extractZipSpy.mockImplementation(async () => '/some/other/temp/path');
     cacheSpy.mockImplementation(async () => toolPath);
 
     await main.run();
@@ -449,7 +448,7 @@ describe('setup-go', () => {
     expect(logSpy).toHaveBeenCalledWith('Attempting to download 1.12.14...');
     expect(dlSpy).toHaveBeenCalled();
     expect(logSpy).toHaveBeenCalledWith('matching 1.12.14...');
-    expect(extractTarSpy).toHaveBeenCalled();
+    expect(extractZipSpy).toHaveBeenCalled();
     expect(logSpy).toHaveBeenCalledWith(
       'Not found in manifest.  Falling back to download directly from Go'
     );
@@ -651,7 +650,7 @@ describe('setup-go', () => {
       const toolPath = path.normalize('/cache/go/1.16.1/x64');
       findSpy.mockReturnValue(toolPath);
       dlSpy.mockImplementation(async () => '/some/temp/path');
-      extractTarSpy.mockImplementation(async () => '/some/other/temp/path');
+      extractZipSpy.mockImplementation(async () => '/some/other/temp/path');
       cacheSpy.mockImplementation(async () => toolPath);
 
       await main.run();
@@ -673,7 +672,7 @@ describe('setup-go', () => {
       findSpy.mockImplementation(() => '');
       dlSpy.mockImplementation(async () => '/some/temp/path');
       const toolPath = path.normalize('/cache/go/1.17.5/x64');
-      extractTarSpy.mockImplementation(async () => '/some/other/temp/path');
+      extractZipSpy.mockImplementation(async () => '/some/other/temp/path');
       cacheSpy.mockImplementation(async () => toolPath);
 
       await main.run();
@@ -783,120 +782,4 @@ describe('setup-go', () => {
     });
   });
 
-  describe('go-version-file', () => {
-    const goModContents = `module example.com/mymodule
-
-go 1.14
-
-require (
-	example.com/othermodule v1.2.3
-	example.com/thismodule v1.2.3
-	example.com/thatmodule v1.2.3
-)
-
-replace example.com/thatmodule => ../thatmodule
-exclude example.com/thismodule v1.3.0
-`;
-
-    const goWorkContents = `go 1.19
-
-use .
-
-`;
-
-    it('reads version from go.mod', async () => {
-      inputs['go-version-file'] = 'go.mod';
-      existsSpy.mockImplementation(() => true);
-      readFileSpy.mockImplementation(() => Buffer.from(goModContents));
-
-      await main.run();
-
-      expect(logSpy).toHaveBeenCalledWith('Setup go version spec 1.14');
-      expect(logSpy).toHaveBeenCalledWith('Attempting to download 1.14...');
-      expect(logSpy).toHaveBeenCalledWith('matching 1.14...');
-    });
-
-    it('reads version from go.work', async () => {
-      inputs['go-version-file'] = 'go.work';
-      existsSpy.mockImplementation(() => true);
-      readFileSpy.mockImplementation(() => Buffer.from(goWorkContents));
-
-      await main.run();
-
-      expect(logSpy).toHaveBeenCalledWith('Setup go version spec 1.19');
-      expect(logSpy).toHaveBeenCalledWith('Attempting to download 1.19...');
-      expect(logSpy).toHaveBeenCalledWith('matching 1.19...');
-    });
-
-    it('reads version from .go-version', async () => {
-      inputs['go-version-file'] = '.go-version';
-      existsSpy.mockImplementation(() => true);
-      readFileSpy.mockImplementation(() => Buffer.from(`1.13.0${osm.EOL}`));
-
-      await main.run();
-
-      expect(logSpy).toHaveBeenCalledWith('Setup go version spec 1.13.0');
-      expect(logSpy).toHaveBeenCalledWith('Attempting to download 1.13.0...');
-      expect(logSpy).toHaveBeenCalledWith('matching 1.13.0...');
-    });
-
-    it('is overwritten by go-version', async () => {
-      inputs['flow-version'] = '1.13.1';
-      inputs['go-version-file'] = 'go.mod';
-      existsSpy.mockImplementation(() => true);
-      readFileSpy.mockImplementation(() => Buffer.from(goModContents));
-
-      await main.run();
-
-      expect(logSpy).toHaveBeenCalledWith('Setup go version spec 1.13.1');
-      expect(logSpy).toHaveBeenCalledWith('Attempting to download 1.13.1...');
-      expect(logSpy).toHaveBeenCalledWith('matching 1.13.1...');
-    });
-
-    it('reports a read failure', async () => {
-      inputs['go-version-file'] = 'go.mod';
-      existsSpy.mockImplementation(() => false);
-
-      await main.run();
-
-      expect(cnSpy).toHaveBeenCalledWith(
-        `::error::The specified go version file at: go.mod does not exist${osm.EOL}`
-      );
-    });
-
-    it('acquires specified architecture of go', async () => {
-      for (const {arch, version, osSpec} of [
-        {arch: 'amd64', version: '1.13.7', osSpec: 'linux'},
-        {arch: 'armv6l', version: '1.12.2', osSpec: 'linux'}
-      ]) {
-        os.platform = osSpec;
-        os.arch = arch;
-
-        const fileExtension = os.platform === 'win32' ? 'zip' : 'tar.gz';
-
-        const platform = os.platform === 'win32' ? 'win' : os.platform;
-
-        inputs['flow-version'] = version;
-        inputs['architecture'] = arch;
-
-        let expectedUrl =
-          platform === 'win32'
-            ? `https://github.com/actions/go-versions/releases/download/${version}/go-${version}-${platform}-${arch}.${fileExtension}`
-            : `https://storage.googleapis.com/golang/go${version}.${osSpec}-${arch}.${fileExtension}`;
-
-        // ... but not in the local cache
-        findSpy.mockImplementation(() => '');
-
-        dlSpy.mockImplementation(async () => '/some/temp/path');
-        let toolPath = path.normalize(`/cache/go/${version}/${arch}`);
-        cacheSpy.mockImplementation(async () => toolPath);
-
-        await main.run();
-
-        expect(logSpy).toHaveBeenCalledWith(
-          `Acquiring go${version} from ${expectedUrl}`
-        );
-      }
-    }, 100000);
-  });
 });
