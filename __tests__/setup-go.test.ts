@@ -382,7 +382,7 @@ describe('setup-go', () => {
       `Acquiring 1.12.16 from ${expectedUrl}`
     );
 
-    expect(logSpy).toHaveBeenCalledWith(`Added go to the path`);
+    expect(logSpy).toHaveBeenCalledWith(`Added flow to the path`);
     expect(cnSpy).toHaveBeenCalledWith(`::add-path::${expPath}${osm.EOL}`);
   });
 
@@ -390,13 +390,13 @@ describe('setup-go', () => {
     os.platform = 'linux';
     os.arch = 'x64';
 
-    let versionSpec = '1.12';
+    let versionSpec = '1.12.17';
 
     inputs['flow-version'] = versionSpec;
     inputs['token'] = 'faketoken';
 
     let expectedUrl =
-      'https://github.com/xxf098/actionflow/releases/download/1.12.16/flow-linux-amd64-1.12.16.zip';
+      'https://github.com/xxf098/actionflow/releases/download/1.12.17/flow-linux-amd64-1.12.17.zip';
 
     // ... but not in the local cache
     findSpy.mockImplementation(() => '');
@@ -443,7 +443,7 @@ describe('setup-go', () => {
     await main.run();
 
     let expPath = toolPath;
-    expect(logSpy).toHaveBeenCalledWith('Setup go version spec 1.12.14');
+    expect(logSpy).toHaveBeenCalledWith('Setup flow version spec 1.12.14');
     expect(findSpy).toHaveBeenCalled();
     expect(logSpy).toHaveBeenCalledWith('Attempting to download 1.12.14...');
     expect(dlSpy).toHaveBeenCalled();
@@ -655,7 +655,7 @@ describe('setup-go', () => {
 
       await main.run();
 
-      expect(logSpy).toHaveBeenCalledWith('Setup go version spec 1.16');
+      expect(logSpy).toHaveBeenCalledWith('Setup flow version spec 1.16');
       expect(logSpy).toHaveBeenCalledWith(`Found in cache @ ${toolPath}`);
     });
 
@@ -678,7 +678,7 @@ describe('setup-go', () => {
       await main.run();
 
       expect(logSpy).toHaveBeenCalledWith(
-        `Setup go version spec ${versionSpec}`
+        `Setup flow version spec ${versionSpec}`
       );
       expect(logSpy).toHaveBeenCalledWith(
         'Attempting to resolve the latest version from the manifest...'
