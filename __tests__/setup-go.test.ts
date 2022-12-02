@@ -271,8 +271,8 @@ describe('setup-go', () => {
   });
 
   it('finds a version in the cache and adds it to the path', async () => {
-    inputs['go-version'] = '1.13.0';
-    let toolPath = path.normalize('/cache/go/1.13.0/x64');
+    inputs['flow-version'] = 'v0.5.10';
+    let toolPath = path.normalize('/cache/flow/v0.5.10/x64');
     findSpy.mockImplementation(() => toolPath);
     await main.run();
 
@@ -282,7 +282,7 @@ describe('setup-go', () => {
 
   it('handles unhandled error and reports error', async () => {
     let errMsg = 'unhandled error message';
-    inputs['go-version'] = '1.13.0';
+    inputs['flow-version'] = 'v0.5.10';
 
     findSpy.mockImplementation(() => {
       throw new Error(errMsg);
