@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/setup-go.git"
+    "url": "git+https://github.com/xxf098/setup-actionflow.git"
   },
   "keywords": [
     "actions",
