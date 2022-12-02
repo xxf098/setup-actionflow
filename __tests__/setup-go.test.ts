@@ -329,8 +329,8 @@ describe('setup-go', () => {
 
     let expPath = toolPath;
     expect(dlSpy).toHaveBeenCalledWith(
-      'https://github.com/xxf098/actionflow/releases/download/v0.5.10/flow-linux-amd64-v0.5.10.zip',
-      'C:\\temp\\flow-linux-amd64-v0.5.10.zip',
+      'https://github.com/xxf098/actionflow/releases/download/v0.5.10/flow-windows-amd64-v0.5.10.zip',
+      'C:\\temp\\flow-windows-amd64-v0.5.10.zip',
       undefined
     );
     expect(cnSpy).toHaveBeenCalledWith(`::add-path::${expPath}${osm.EOL}`);
@@ -346,7 +346,7 @@ describe('setup-go', () => {
     await main.run();
 
     expect(cnSpy).toHaveBeenCalledWith(
-      `::error::Unable to find Go version '9.99.9' for platform linux and architecture x64.${osm.EOL}`
+      `::error::Failed to download version '9.99.9':`
     );
   });
 
@@ -367,7 +367,7 @@ describe('setup-go', () => {
 
     dlSpy.mockImplementation(async () => '/some/temp/path');
     let toolPath = path.normalize('/cache/go/1.12.16/x64');
-    extractTarSpy.mockImplementation(async () => '/some/other/temp/path');
+    extractZipSpy.mockImplementation(async () => '/some/other/temp/path');
     cacheSpy.mockImplementation(async () => toolPath);
 
     await main.run();
@@ -375,7 +375,7 @@ describe('setup-go', () => {
     let expPath = toolPath;
 
     expect(dlSpy).toHaveBeenCalled();
-    expect(extractTarSpy).toHaveBeenCalled();
+    expect(extractZipSpy).toHaveBeenCalled();
     expect(logSpy).not.toHaveBeenCalledWith(
       'Not found in manifest.  Falling back to download directly from Go'
     );
@@ -404,7 +404,7 @@ describe('setup-go', () => {
 
     dlSpy.mockImplementation(async () => '/some/temp/path');
     let toolPath = path.normalize('/cache/go/1.12.17/x64');
-    extractTarSpy.mockImplementation(async () => '/some/other/temp/path');
+    extractZipSpy.mockImplementation(async () => '/some/other/temp/path');
     cacheSpy.mockImplementation(async () => toolPath);
 
     await main.run();
@@ -412,7 +412,7 @@ describe('setup-go', () => {
     let expPath = path.join(toolPath, 'bin');
 
     expect(dlSpy).toHaveBeenCalled();
-    expect(extractTarSpy).toHaveBeenCalled();
+    expect(extractZipSpy).toHaveBeenCalled();
     expect(logSpy).not.toHaveBeenCalledWith(
       'Not found in manifest.  Falling back to download directly from Go'
     );
