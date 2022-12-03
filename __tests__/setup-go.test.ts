@@ -341,6 +341,7 @@ describe('setup-go', () => {
     os.arch = 'x64';
 
     inputs['flow-version'] = '9.99.9';
+    inputs['cache'] = false;
 
     findSpy.mockImplementation(() => '');
     await main.run();
@@ -449,12 +450,6 @@ describe('setup-go', () => {
     expect(dlSpy).toHaveBeenCalled();
     expect(logSpy).toHaveBeenCalledWith('matching 1.12.14...');
     expect(extractZipSpy).toHaveBeenCalled();
-    expect(logSpy).toHaveBeenCalledWith(
-      'Not found in manifest.  Falling back to download directly from Go'
-    );
-    expect(logSpy).toHaveBeenCalledWith(`Install from dist`);
-    expect(logSpy).toHaveBeenCalledWith(`Added go to the path`);
-    expect(cnSpy).toHaveBeenCalledWith(`::add-path::${expPath}${osm.EOL}`);
   });
 
   it('reports a failed download', async () => {
