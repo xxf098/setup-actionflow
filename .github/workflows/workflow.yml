@@ -28,13 +28,13 @@ jobs:
       - name: npm ci
         run: npm ci
 
-      - name: npm test
-        run: npm test        
-      
       - name: Setup flow
         run: |
           npm run build
-          env INPUT_FLOW-VERSION=v9.99.9 INPUT_CACHE=false INPUT_CHECK-LATEST=false node ./dist/setup/index.js
+          env INPUT_FLOW-VERSION=v0.5.10 INPUT_CACHE=false INPUT_CHECK-LATEST=false node ./dist/setup/index.js
+
+      - name: npm test
+        run: npm test   
  
       - name: Run flow
         run: |
