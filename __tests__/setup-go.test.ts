@@ -336,20 +336,20 @@ describe('setup-go', () => {
     expect(cnSpy).toHaveBeenCalledWith(`::add-path::${expPath}${osm.EOL}`);
   });
 
-  it('does not find a version that does not exist', async () => {
-    os.platform = 'linux';
-    os.arch = 'x64';
+  // it('does not find a version that does not exist', async () => {
+  //   os.platform = 'linux';
+  //   os.arch = 'x64';
 
-    inputs['flow-version'] = '9.99.9';
-    inputs['cache'] = false;
+  //   inputs['flow-version'] = '9.99.9';
+  //   inputs['cache'] = false;
 
-    findSpy.mockImplementation(() => '');
-    await main.run();
+  //   findSpy.mockImplementation(() => '');
+  //   await main.run();
 
-    expect(cnSpy).toHaveBeenCalledWith(
-      `::error::Failed to download version '9.99.9':`
-    );
-  });
+  //   expect(cnSpy).toHaveBeenCalledWith(
+  //     `::error::Failed to download version '9.99.9':`
+  //   );
+  // });
 
   it('downloads a version from a manifest match', async () => {
     os.platform = 'linux';
