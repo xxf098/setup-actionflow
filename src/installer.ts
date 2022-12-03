@@ -191,6 +191,7 @@ async function getFlowInfoFromDist(
     return null;
   }
 
+  core.info(`matching ${version}...`);
   const fileName: string = `flow-${platform}-${arch}-${version}.zip`
   let downloadUrl: string = `https://github.com/xxf098/actionflow/releases/download/${version}/${fileName}`;
 
