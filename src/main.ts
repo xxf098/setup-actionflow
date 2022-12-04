@@ -50,10 +50,6 @@ export async function run() {
       await restoreCache(versionSpec, packageManager, cacheDependencyPath);
     }
 
-    // add problem matchers
-    const matchersPath = path.join(__dirname, '../..', 'matchers.json');
-    core.info(`##[add-matcher]${matchersPath}`);
-
     core.setOutput('flow-version', versionSpec);
    
   } catch (error) {
