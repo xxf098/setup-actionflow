@@ -63238,7 +63238,7 @@ function getGo(versionSpec, checkLatest, auth, arch = os_1.default.arch()) {
         }
         // check cache
         let toolPath;
-        toolPath = tc.find('go', versionSpec, arch);
+        toolPath = tc.find('flow', versionSpec, arch);
         // If not found in cache, download
         if (toolPath) {
             core.info(`Found in cache @ ${toolPath}`);
@@ -63247,11 +63247,13 @@ function getGo(versionSpec, checkLatest, auth, arch = os_1.default.arch()) {
         core.info(`Attempting to download ${versionSpec}...`);
         let downloadPath = '';
         let info = null;
+        let archFilter = sys.getArch(arch);
+        let platFilter = sys.getPlatform();
         //
         // Try download from internal distribution (popular versions only)
         //
         try {
-            info = yield getInfoFromManifest(versionSpec, true, auth, arch);
+            info = yield getFlowInfoFromDist(versionSpec, archFilter, platFilter);
             if (info) {
                 downloadPath = yield installGoVersion(info, auth, arch);
             }
@@ -63269,22 +63271,7 @@ function getGo(versionSpec, checkLatest, auth, arch = os_1.default.arch()) {
             }
             core.debug(err.stack);
             core.info('Falling back to download directly from Go');
-        }
-        //
-        // Download from storage.googleapis.com
-        //
-        if (!downloadPath) {
-            info = yield getInfoFromDist(versionSpec, arch);
-            if (!info) {
-                throw new Error(`Unable to find Go version '${versionSpec}' for platform ${osPlat} and architecture ${arch}.`);
-            }
-            try {
-                core.info('Install from dist');
-                downloadPath = yield installGoVersion(info, undefined, arch);
-            }
-            catch (err) {
-                throw new Error(`Failed to download version ${versionSpec}: ${err}`);
-            }
+            throw new Error(`Failed to download version ${versionSpec}: ${err}`);
         }
         return downloadPath;
     });
@@ -63310,15 +63297,12 @@ function installGoVersion(info, auth, arch) {
         const tempDir = process.env.RUNNER_TEMP || '.';
         const fileName = isWindows ? path.join(tempDir, info.fileName) : undefined;
         const downloadPath = yield tc.downloadTool(info.downloadUrl, fileName, auth);
-        core.info('Extracting Go...');
+        core.info('Extracting Flow...');
         let extPath = yield extractGoArchive(downloadPath);
         core.info(`Successfully extracted go to ${extPath}`);
-        if (info.type === 'dist') {
-            extPath = path.join(extPath, 'go');
-        }
         core.info('Adding to the cache ...');
-        const cachedDir = yield tc.cacheDir(extPath, 'go', makeSemver(info.resolvedVersion), arch);
-        core.info(`Successfully cached go to ${cachedDir}`);
+        const cachedDir = yield tc.cacheDir(extPath, 'flow', makeSemver(info.resolvedVersion), arch);
+        core.info(`Successfully cached flow to ${cachedDir}`);
         return cachedDir;
     });
 }
@@ -63330,7 +63314,7 @@ function extractGoArchive(archivePath) {
             extPath = yield tc.extractZip(archivePath);
         }
         else {
-            extPath = yield tc.extractTar(archivePath);
+            extPath = yield tc.extractZip(archivePath);
         }
         return extPath;
     });
@@ -63353,19 +63337,19 @@ function getInfoFromManifest(versionSpec, stable, auth, arch = os_1.default.arch
     });
 }
 exports.getInfoFromManifest = getInfoFromManifest;
-function getInfoFromDist(versionSpec, arch) {
+function getFlowInfoFromDist(version, arch, platform) {
     return __awaiter(this, void 0, void 0, function* () {
-        let version;
-        version = yield findMatch(versionSpec, arch);
         if (!version) {
             return null;
         }
-        let downloadUrl = `https://storage.googleapis.com/golang/${version.files[0].filename}`;
+        core.info(`matching ${version}...`);
+        const fileName = `flow-${platform}-${arch}-${version}.zip`;
+        let downloadUrl = `https://github.com/xxf098/actionflow/releases/download/${version}/${fileName}`;
         return {
             type: 'dist',
             downloadUrl: downloadUrl,
-            resolvedVersion: version.version,
-            fileName: version.files[0].filename
+            resolvedVersion: version,
+            fileName: fileName
         };
     });
 }
@@ -63497,12 +63481,8 @@ exports.parseGoVersion = exports.addBinToPath = exports.run = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const io = __importStar(__nccwpck_require__(7436));
 const installer = __importStar(__nccwpck_require__(2574));
-const semver = __importStar(__nccwpck_require__(5911));
-const path_1 = __importDefault(__nccwpck_require__(1017));
 const cache_restore_1 = __nccwpck_require__(9517);
 const cache_utils_1 = __nccwpck_require__(1678);
-const child_process_1 = __importDefault(__nccwpck_require__(2081));
-const fs_1 = __importDefault(__nccwpck_require__(7147));
 const os_1 = __importDefault(__nccwpck_require__(2037));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -63513,7 +63493,7 @@ function run() {
             //
             const versionSpec = resolveVersionInput();
             const cache = core.getBooleanInput('cache');
-            core.info(`Setup go version spec ${versionSpec}`);
+            core.info(`Setup flow version spec ${versionSpec}`);
             let arch = core.getInput('architecture');
             if (!arch) {
                 arch = os_1.default.arch();
@@ -63523,35 +63503,16 @@ function run() {
                 let auth = !token ? undefined : `token ${token}`;
                 const checkLatest = core.getBooleanInput('check-latest');
                 const installDir = yield installer.getGo(versionSpec, checkLatest, auth, arch);
-                core.addPath(path_1.default.join(installDir, 'bin'));
-                core.info('Added go to the path');
-                const version = installer.makeSemver(versionSpec);
-                // Go versions less than 1.9 require GOROOT to be set
-                if (semver.lt(version, '1.9.0')) {
-                    core.info('Setting GOROOT for Go version < 1.9');
-                    core.exportVariable('GOROOT', installDir);
-                }
-                let added = yield addBinToPath();
-                core.debug(`add bin ${added}`);
-                core.info(`Successfully set up Go version ${versionSpec}`);
+                core.addPath(installDir);
+                core.info('Added flow to the path');
+                core.info(`Successfully set up Flow version ${versionSpec}`);
             }
             if (cache && cache_utils_1.isCacheFeatureAvailable()) {
                 const packageManager = 'default';
                 const cacheDependencyPath = core.getInput('cache-dependency-path');
                 yield cache_restore_1.restoreCache(versionSpec, packageManager, cacheDependencyPath);
             }
-            // add problem matchers
-            const matchersPath = path_1.default.join(__dirname, '../..', 'matchers.json');
-            core.info(`##[add-matcher]${matchersPath}`);
-            // output the version actually being used
-            let goPath = yield io.which('go');
-            let goVersion = (child_process_1.default.execSync(`${goPath} version`) || '').toString();
-            core.info(goVersion);
-            core.setOutput('go-version', parseGoVersion(goVersion));
-            core.startGroup('go env');
-            let goEnv = (child_process_1.default.execSync(`${goPath} env`) || '').toString();
-            core.info(goEnv);
-            core.endGroup();
+            core.setOutput('flow-version', versionSpec);
         }
         catch (error) {
             core.setFailed(error.message);
@@ -63562,28 +63523,11 @@ exports.run = run;
 function addBinToPath() {
     return __awaiter(this, void 0, void 0, function* () {
         let added = false;
-        let g = yield io.which('go');
-        core.debug(`which go :${g}:`);
+        let g = yield io.which('flow');
+        core.debug(`which flow :${g}:`);
         if (!g) {
-            core.debug('go not in the path');
+            core.debug('flow not in the path');
             return added;
-        }
-        let buf = child_process_1.default.execSync('go env GOPATH');
-        if (buf.length > 1) {
-            let gp = buf.toString().trim();
-            core.debug(`go env GOPATH :${gp}:`);
-            if (!fs_1.default.existsSync(gp)) {
-                // some of the hosted images have go install but not profile dir
-                core.debug(`creating ${gp}`);
-                yield io.mkdirP(gp);
-            }
-            let bp = path_1.default.join(gp, 'bin');
-            if (!fs_1.default.existsSync(bp)) {
-                core.debug(`creating ${bp}`);
-                yield io.mkdirP(bp);
-            }
-            core.addPath(bp);
-            added = true;
         }
         return added;
     });
@@ -63594,24 +63538,11 @@ function parseGoVersion(versionString) {
     // based on go/src/cmd/go/internal/version/version.go:
     // fmt.Printf("go version %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH)
     // expecting go<version> for runtime.Version()
-    return versionString.split(' ')[2].slice('go'.length);
+    return versionString.split(' ')[2].slice('flow'.length);
 }
 exports.parseGoVersion = parseGoVersion;
 function resolveVersionInput() {
-    let version = core.getInput('go-version');
-    const versionFilePath = core.getInput('go-version-file');
-    if (version && versionFilePath) {
-        core.warning('Both go-version and go-version-file inputs are specified, only go-version will be used');
-    }
-    if (version) {
-        return version;
-    }
-    if (versionFilePath) {
-        if (!fs_1.default.existsSync(versionFilePath)) {
-            throw new Error(`The specified go version file at: ${versionFilePath} does not exist`);
-        }
-        version = installer.parseGoVersionFile(versionFilePath);
-    }
+    let version = core.getInput('flow-version');
     return version;
 }
 
