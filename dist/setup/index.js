@@ -63238,7 +63238,7 @@ function getGo(versionSpec, checkLatest, auth, arch = os_1.default.arch()) {
         }
         // check cache
         let toolPath;
-        toolPath = tc.find('flow', versionSpec.replace('/^[vV]/', ''), arch);
+        toolPath = tc.find('flow', versionSpec.replace('v', ''), arch);
         // If not found in cache, download
         if (toolPath) {
             core.info(`Found in cache @ ${toolPath}`);
