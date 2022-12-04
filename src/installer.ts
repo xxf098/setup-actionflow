@@ -55,7 +55,7 @@ export async function getGo(
 
   // check cache
   let toolPath: string;
-  toolPath = tc.find('flow', versionSpec, arch);
+  toolPath = tc.find('flow', versionSpec.replace('/^[vV]/', ''), arch);
   // If not found in cache, download
   if (toolPath) {
     core.info(`Found in cache @ ${toolPath}`);
@@ -135,8 +135,7 @@ async function installGoVersion(
   const cachedDir = await tc.cacheDir(
     extPath,
     'flow',
-    // makeSemver(info.resolvedVersion),
-    info.resolvedVersion,
+    makeSemver(info.resolvedVersion),
     arch
   );
   core.info(`Successfully cached flow to ${cachedDir}`);
