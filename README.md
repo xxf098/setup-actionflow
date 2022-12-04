@@ -1,4 +1,4 @@
-# setup-go
+# setup-flow
 
 [![build-test](https://github.com/actions/setup-go/actions/workflows/workflow.yml/badge.svg)](https://github.com/actions/setup-go/actions/workflows/workflow.yml)
 [![Validate 'setup-go'](https://github.com/actions/setup-go/actions/workflows/versions.yml/badge.svg)](https://github.com/actions/setup-go/actions/workflows/versions.yml)

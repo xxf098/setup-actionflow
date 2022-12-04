@@ -2,7 +2,7 @@
   "name": "setup-go",
   "version": "3.3.0",
   "private": true,
-  "description": "setup go action",
+  "description": "setup flow action",
   "main": "lib/setup-go.js",
   "scripts": {
     "build": "tsc && ncc build -o dist/setup src/setup-go.ts && ncc build -o dist/cache-save src/cache-save.ts",
