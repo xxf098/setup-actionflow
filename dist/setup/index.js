@@ -63238,7 +63238,7 @@ function getGo(versionSpec, checkLatest, auth, arch = os_1.default.arch()) {
         }
         // check cache
         let toolPath;
-        toolPath = tc.find('flow', versionSpec, arch);
+        toolPath = tc.find('flow', versionSpec.replace('/^[vV]/', ''), arch);
         // If not found in cache, download
         if (toolPath) {
             core.info(`Found in cache @ ${toolPath}`);
@@ -63299,7 +63299,7 @@ function installGoVersion(info, auth, arch) {
         const downloadPath = yield tc.downloadTool(info.downloadUrl, fileName, auth);
         core.info('Extracting Flow...');
         let extPath = yield extractGoArchive(downloadPath);
-        core.info(`Successfully extracted go to ${extPath}`);
+        core.info(`Successfully extracted flow to ${extPath}`);
         core.info('Adding to the cache ...');
         const cachedDir = yield tc.cacheDir(extPath, 'flow', makeSemver(info.resolvedVersion), arch);
         core.info(`Successfully cached flow to ${cachedDir}`);

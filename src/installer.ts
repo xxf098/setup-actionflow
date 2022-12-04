@@ -55,7 +55,7 @@ export async function getGo(
 
   // check cache
   let toolPath: string;
-  toolPath = tc.find('flow', versionSpec.replace('/^[vV]/', ''), arch);
+  toolPath = tc.find('flow', versionSpec.replace('v', ''), arch);
   // If not found in cache, download
   if (toolPath) {
     core.info(`Found in cache @ ${toolPath}`);
