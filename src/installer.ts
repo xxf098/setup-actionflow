@@ -129,13 +129,14 @@ async function installGoVersion(
 
   core.info('Extracting Flow...');
   let extPath = await extractGoArchive(downloadPath);
-  core.info(`Successfully extracted go to ${extPath}`);
+  core.info(`Successfully extracted flow to ${extPath}`);
 
   core.info('Adding to the cache ...');
   const cachedDir = await tc.cacheDir(
     extPath,
     'flow',
-    makeSemver(info.resolvedVersion),
+    // makeSemver(info.resolvedVersion),
+    info.resolvedVersion,
     arch
   );
   core.info(`Successfully cached flow to ${cachedDir}`);
